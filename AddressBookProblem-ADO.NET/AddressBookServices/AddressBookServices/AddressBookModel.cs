@@ -27,5 +27,6 @@ namespace AddressBookServices
         public string emailId { get; set; }
         public string contactType { get; set; }
         public string addressBookName { get; set; }
+        public DateTime DateOfEntry { get; set; }
     }
 }

@@ -144,6 +144,8 @@ namespace AddressBookServices
             repository.GetAllDataFromTableUsingJoin();
             /// UC10-- Ensuring the other use cases working fine for retrieval
             repository.EnsuringOtherUseCasesForJoinedTable();
+            /// UC18 -- Retrieving the data from the address book entered within a date frame
+            repository.RetrieveAllTheContactAddedInBetweenADate(Convert.ToDateTime("2018-01-01"));
         }
     }
 }
