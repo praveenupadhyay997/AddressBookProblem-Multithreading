@@ -56,7 +56,7 @@ namespace AddressBookServices
                     /// Query to get all the data from the table
                     string query = @"select * from addressBookDatabase";
                     /// Impementing the command on the connection fetched database table
-                    
+
                     SqlCommand command = new SqlCommand(query, connectionToServer);
                     /// Opening the connection to start mapping
                     connectionToServer.Open();
@@ -70,7 +70,7 @@ namespace AddressBookServices
                         while (reader.Read())
                         {
                             bookModel.firstName = reader.GetString(0);
-                            bookModel.secondName= reader.GetString(1);
+                            bookModel.secondName = reader.GetString(1);
                             bookModel.address = reader.GetString(2);
                             bookModel.city = reader.GetString(3);
                             bookModel.state = reader.GetString(4);
@@ -181,7 +181,7 @@ namespace AddressBookServices
                         query = @"update dbo.addressBookDatabase set contactType = @parameter1
                     where firstName = @parameter2";
                     }
-                    else if(choice == 2)
+                    else if (choice == 2)
                     {
                         query = @"update dbo.addressBookDatabase set addressBookName= @parameter1
                    where firstName = @parameter2";
@@ -224,7 +224,7 @@ namespace AddressBookServices
             if (firstName == null)
             {
                 Console.WriteLine("Enter the first name whose contact you want to delete :");
-                 name = Console.ReadLine();
+                name = Console.ReadLine();
             }
             else
             {
@@ -239,7 +239,7 @@ namespace AddressBookServices
                 /// Using the connection established
                 using (connectionToServer)
                 {
-                    
+
                     /// Opening the connection
                     connectionToServer.Open();
                     /// Update query  for the table and binding with the parameter passed
@@ -303,9 +303,9 @@ namespace AddressBookServices
                                      where d.city = @parameter";
                         }
                     }
-                    else if(choice == 2)
+                    else if (choice == 2)
                     {
-                        if(property == 1)
+                        if (property == 1)
                         {
                             // Query to get the data from the table
                             query = @"select * from dbo.addressBookDatabase
@@ -340,7 +340,7 @@ namespace AddressBookServices
                         /// Mapping the data to the retrieved data from executing the query on the table
                         while (reader.Read())
                         {
-                            if(property == 1)
+                            if (property == 1)
                             {
                                 bookModel.firstName = reader.GetString(0);
                                 bookModel.secondName = reader.GetString(1);
@@ -431,7 +431,7 @@ namespace AddressBookServices
                     }
                     else if (choice == 2)
                     {
-                        if(property == 1)
+                        if (property == 1)
                         {
                             // Query to get the data from the table
                             query = @"select Count(firstName) from dbo.addressBookDatabase
@@ -505,7 +505,7 @@ namespace AddressBookServices
             {
                 using (connectionToServer)
                 {
-                    if(property==1)
+                    if (property == 1)
                     {
                         /// Query to get all the data from the table
                         query = @"select * from addressBookDatabase where city = @parameter order by firstName";
@@ -589,7 +589,7 @@ namespace AddressBookServices
             {
                 connectionToServer.Close();
             }
-        }      
+        }
         /// <summary>
         /// UC8 -- Function to get the count of the records stored in contact type using the group by clause
         /// </summary>
@@ -739,7 +739,7 @@ namespace AddressBookServices
             Console.WriteLine("5.Sort alphabetically by name for a City.");
             Console.WriteLine("6.Get Number Of Contact By Type.");
             int choice = Convert.ToInt32(Console.ReadLine());
-            switch(choice)
+            switch (choice)
             {
                 case 1:
                     Console.WriteLine("Enter the city you want to fetch data for...");
@@ -794,7 +794,7 @@ namespace AddressBookServices
                     /// Opening the connection
                     connectionToServer.Open();
                     /// Update query  for the table and binding with the parameter passed
-                    if(choice ==1)
+                    if (choice == 1)
                     {
                         query = "select contactType from dbo.addressBookDatabase where firstName = @parameter1";
                     }
@@ -817,7 +817,7 @@ namespace AddressBookServices
                         {
                             string dataRetrieved = reader.GetString(0);
                             connectionToServer.Close();
-                            return (dataRetrieved.Equals(updatedData)? 1 : 0);
+                            return (dataRetrieved.Equals(updatedData) ? 1 : 0);
                         }
                     }
                     else
@@ -838,5 +838,75 @@ namespace AddressBookServices
             }
             return -1;
         }
+        /// <summary>
+        /// UC18 -- Get the detail of the record in the address book entered within a time frame
+        /// </summary>
+        /// <param name="date"></param>
+        public void RetrieveAllTheContactAddedInBetweenADate(DateTime date)
+        {
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            /// Creating the address book model class object
+            AddressBookModel bookModel = new AddressBookModel();
+            try
+            {
+                using (connectionToServer)
+                {
+                    /// Query to get all the data from the table
+                    string query = @"select * from addressBookDatabase where dateOfEntry between @parameter and CAST(GETDATE() AS Date );";
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Binding the parameter to the formal parameters
+                    command.Parameters.AddWithValue("@parameter", date);
+                    /// Opening the connection to start mapping
+                    connectionToServer.Open();
+                    /// executing the sql data reader to fetch the records
+                    SqlDataReader reader = command.ExecuteReader();
+                    /// executing for not null
+                    if (reader.HasRows)
+                    {
+                        /// Moving to the next record from the table
+                        /// Mapping the data to the employee model class object
+                        while (reader.Read())
+                        {
+                            bookModel.firstName = reader.GetString(0);
+                            bookModel.secondName = reader.GetString(1);
+                            bookModel.address = reader.GetString(2);
+                            bookModel.city = reader.GetString(3);
+                            bookModel.state = reader.GetString(4);
+                            bookModel.zip = reader.GetInt64(5);
+                            bookModel.phoneNumber = reader.GetInt64(6);
+                            bookModel.emailId = reader.GetString(7);
+                            bookModel.contactType = reader.GetString(8);
+                            bookModel.addressBookName = reader.GetString(9);
+                            bookModel.DateOfEntry = reader.GetDateTime(10);
+                            Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
+                                $"Phone Number: {bookModel.phoneNumber}\nContact Type: {bookModel.contactType}\nAddress Book Name : {bookModel.addressBookName}\n" +
+                                $"Date Of Entry in the Address Book: {bookModel.DateOfEntry}");
+                            Console.WriteLine("\n\n");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No data found");
+                    }
+                    reader.Close();
+                }
+            }
+            /// Catching the null record exception
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            /// Alway ensuring the closing of the connection
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
     }
 }
+
