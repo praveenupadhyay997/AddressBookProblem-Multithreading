@@ -771,5 +771,72 @@ namespace AddressBookServices
                     break;
             }
         }
+        /// <summary>
+        /// UC17 -- Check for the updated data and return an integral value after the update
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="updatedData"></param>
+        /// <param name="choice"></param>
+        /// <returns> -1 : If the data is inconsistent , 0 - If the updated data do not matches
+        /// 1- If the updated data is find </returns>
+        public int GetTheUpdatedData(string name, string updatedData, int choice)
+        {
+            string query;
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            try
+            {
+                /// Using the connection established
+                using (connectionToServer)
+                {
+                    /// Opening the connection
+                    connectionToServer.Open();
+                    /// Update query  for the table and binding with the parameter passed
+                    if(choice ==1)
+                    {
+                        query = "select contactType from dbo.addressBookDatabase where firstName = @parameter1";
+                    }
+                    else
+                    {
+                        query = "select addressBookName from dbo.addressBookDatabase where firstName = @parameter1";
+                    }
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Binding the parameter to the formal parameters
+                    command.Parameters.AddWithValue("@parameter1", name);
+                    /// executing the sql data reader to fetch the records
+                    SqlDataReader reader = command.ExecuteReader();
+                    /// executing for not null
+                    if (reader.HasRows)
+                    {
+                        /// Moving to the next record from the table
+                        /// Mapping the data to the retrieved data from executing the query on the table
+                        while (reader.Read())
+                        {
+                            string dataRetrieved = reader.GetString(0);
+                            connectionToServer.Close();
+                            return (dataRetrieved.Equals(updatedData)? 1 : 0);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No Data found");
+                        return -1;
+                    }
+                }
+            }
+            /// Catching any type of exception generated during the run time
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connectionToServer.Close();
+            }
+            return -1;
+        }
     }
 }

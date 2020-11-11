@@ -77,5 +77,22 @@ namespace AddressBookUnitTestProject
             /// Assert
             Assert.AreEqual(expected, actual);
         }
+        /// <summary>
+        /// TC 4 -- Check For Update of the Record and integrity of update method after the update
+        /// </summary>
+        [TestMethod]
+        public void CheckUsingNameAndForUpdateAfterTheUpdate()
+        {
+            /// Act
+            int expected = 1;
+            /// Invoking the edit contact using name method so as to update the contact type
+            /// Vijay -First name for the data row
+            /// Family - New contact type
+            /// 1 - update for contact type, 2- update the address book name
+            bool actualAfterUpdate = bookRepository.EditContactUsingName("Vijay", "Friends", 1);
+            int actual = bookRepository.GetTheUpdatedData("Vijay", "Friends", 1);
+            /// Assert
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
