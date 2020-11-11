@@ -79,9 +79,11 @@ namespace AddressBookServices
                             bookModel.emailId = reader.GetString(7);
                             bookModel.contactType = reader.GetString(8);
                             bookModel.addressBookName = reader.GetString(9);
+                            bookModel.DateOfEntry = reader.GetDateTime(10);
                             Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
                                 $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
-                                $"Phone Number: {bookModel.phoneNumber}\nContact Type: {bookModel.contactType}\nAddress Book Name : {bookModel.addressBookName}");
+                                $"Phone Number: {bookModel.phoneNumber}\nContact Type: {bookModel.contactType}\nAddress Book Name : {bookModel.addressBookName}" +
+                                $"Date Of Entry in the Address Book: { bookModel.DateOfEntry}");
                             Console.WriteLine("\n\n");
                         }
                     }
@@ -817,6 +819,7 @@ namespace AddressBookServices
                         {
                             string dataRetrieved = reader.GetString(0);
                             connectionToServer.Close();
+                            /// Returning the match with updated data for the modified contact
                             return (dataRetrieved.Equals(updatedData) ? 1 : 0);
                         }
                     }
